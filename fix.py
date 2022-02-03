@@ -1,8 +1,4 @@
 import json
-import cv2
-from matplotlib import pyplot as plt
-import numpy as np
-import os
 import tqdm
 
 ANNOTATION_FILE_PATH = "personal/result.json/"
