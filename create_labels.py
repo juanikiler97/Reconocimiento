@@ -5,9 +5,9 @@ import numpy as np
 import os
 import tqdm
 
-ANNOTATION_FILE_PATH = "personal/result.json"
-RESULT_FILE_PATH = "personal/train/labels"
-IMAGE_FILE_PATH = "personal/train/images"
+ANNOTATION_FILE_PATH = "personal/result.json/"
+RESULT_FILE_PATH = "personal/train/labels/"
+IMAGE_FILE_PATH = "personal/train/images/"
 
 def plot_single_image(img, title=None, size=(8, 8), cmap='viridis'):
 	plt.figure(figsize=size)
@@ -50,9 +50,9 @@ for image in tqdm.tqdm(annotations):
     mask = np.zeros((image["width"], image["height"]), dtype="int32")
     #print(mask.shape)
     cv2.drawContours(mask, coordenadas, -1, 1, thickness=cv2.FILLED)
-    cv2.imwrite(RESULT_FILE_PATH + image["file_name"], mask)
+    cv2.imwrite(RESULT_FILE_PATH + image["mask_name"], mask)
 
-test_path = annotations[8000]['file_name']
-test_image = cv2.imread(f"{IMAGE_FILE_PATH}/{test_path}")[:,:,::-1]
-test_label = np.float32(cv2.imread(f"{RESULT_FILE_PATH}/{test_path}", cv2.IMREAD_GRAYSCALE))
+test_path = (annotations[0]["file_name"], annotations[0]['mask_name'])
+test_image = cv2.imread(f"{IMAGE_FILE_PATH}/{test_path[0]}")[:,:,::-1]
+test_label = np.float32(cv2.imread(f"{RESULT_FILE_PATH}/{test_path[1]}", cv2.IMREAD_GRAYSCALE))
 plot_multiple_images([test_image, test_label])
