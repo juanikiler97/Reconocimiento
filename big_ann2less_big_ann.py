@@ -20,6 +20,7 @@ for image in tqdm.tqdm(annotations["images"]):
     final_instance = {
         "image_id": image_id,
         "file_name": image_name,
+        "mask_name": image_name[:-3] + "png",
         "coordinates": building_borders,
         "width": image["width"],
         "height": image["height"]
