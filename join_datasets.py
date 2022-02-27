@@ -1,19 +1,10 @@
+import random
 import shutil
 from tqdm import tqdm
 import os
 import cv2
-from matplotlib import pyplot as plt
-DEST_PATH = "personal/final_dataset"
 
-def plot_single_image(img, title=None, size=(8, 8), cmap='viridis'):
-	plt.figure(figsize=size)
-	plt.xticks([])
-	plt.yticks([])
-	plt.grid(False)
-	plt.imshow(img, cmap=cmap)
-	if title:
-		plt.title(title)
-	plt.show()
+DEST_PATH = "personal/final_dataset"
 
 def _zelanda_la_oculta(path: str):
     for subdir in os.listdir(path):
@@ -24,29 +15,91 @@ def _zelanda_la_oculta(path: str):
         print( f"\t{subdir} - {len(files)}" )
         for i in tqdm(files):
             image = cv2.imread( os.path.join(path, subdir, i))
-            cv2.imwrite(os.path.join(DEST_PATH, subdir + "s", i[:-3] + ext), image)
+            cv2.imwrite(os.path.join(DEST_PATH, "train" , subdir + "s", i[:-3] + ext), image)
 
 def zelanda_la_nueva(path: str = "nueva_zelanda"):
     for i in next(os.walk(path))[1]:
         print(os.path.join(path, i))
         _zelanda_la_oculta( os.path.join(path, i) )
 
-
 def sn1_func(path: str):
     pass
 
 def my_func(path: str):
-    shutil.copytree(path, DEST_PATH, dirs_exist_ok=True)
+    #shutil.copytree(path, DEST_PATH, dirs_exist_ok=True)
+    for file in tqdm(os.listdir( f'{path}/images')):
+        shutil.copy(f'{path}/images/{file}', f'{DEST_PATH}/train//images/{file}')
+        shutil.copy(f'{path}/labels/{file[:-3] + "png"}', f'{DEST_PATH}/train/labels/{file[:-3] + "png"}')
+
+def test_function(dataset_path:str, dest_path:str, proportion:float = 0.02):
+    """
+    Coge imágenes de un dataset y separa un porcentaje en otra carpeta
+
+    Recibe: 
+        dataset_path: string con el path al dataset del que quitar imágenes
+        dest_path: string que marca donde poner las imágenes
+    """    
+    images = os.listdir(dataset_path + "/images")
+    n_images = len(images)
+
+    random.seed(1234)
+    selected = random.sample(images, round(n_images * proportion))
+
+    print("Creando partición de Test...")
+    for image in tqdm(selected):
+        shutil.move(f'{dataset_path}/images/{image}', f'{dest_path}/images/{image}')
+        shutil.move(f'{dataset_path}/labels/{image[:-3] + "png"}', f'{dest_path}/labels/{image[:-3] + "png"}')
 
 # CUIDAO - - Pon bien el separador. En windows es \, en los que no son especialitos es /
-folder_functions = {
+FOLDER_FUNCTIONS = {
     "personal\\nueva_zelanda": zelanda_la_nueva,
     "personal\\SN1_buildings\\train": sn1_func,
     "personal\\train": my_func
 }
 
 if __name__ == "__main__":
-    os.makedirs(DEST_PATH + "/images", exist_ok=True)
-    os.makedirs(DEST_PATH + "/labels", exist_ok=True)
-    for f in folder_functions:
-        folder_functions[f](f)
+    os.makedirs(DEST_PATH + "/train/images", exist_ok=True)
+    os.makedirs(DEST_PATH + "/train/labels", exist_ok=True)
+    os.makedirs(DEST_PATH + "/test/images", exist_ok=True)
+    os.makedirs(DEST_PATH + "/test/labels", exist_ok=True)
+
+    fucntions2use = FOLDER_FUNCTIONS.copy()
+    start = False
+    seleccion = []
+
+    while not start:
+        print(
+            "Si quieres usar todas las carpetas, presiona enter\n"
+            "Si quieres utilizar algunas en concreto, pon sus números separados por espacios\n"
+            "Si no quieres usar ninguna, pon -1")
+        for i, func in enumerate(fucntions2use):
+            print(f'\t{i} - {func}')
+
+        seleccion = input(">>> ")
+        if seleccion == "-1":
+            break
+
+        seleccion = seleccion.split(" ")
+
+        if seleccion == ['']:
+            seleccion = list(range(len(fucntions2use)))  
+
+        def parseInt(string:str):
+            try:
+                return int(string)
+            except Exception as e:
+                return None
+        
+        
+        seleccion = [ i for i in map(lambda item: parseInt(item), seleccion) if i is not None]
+
+        start = True
+
+    for i in seleccion:
+        key = list(fucntions2use.keys())[i]
+        #print(key)
+        fucntions2use[key](key)
+
+    #test_function(DEST_PATH + "/train", DEST_PATH + "/test")
+
+
