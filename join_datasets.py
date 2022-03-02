@@ -23,12 +23,16 @@ def zelanda_la_nueva(path: str = "nueva_zelanda"):
         _zelanda_la_oculta( os.path.join(path, i) )
 
 def sn1_func(path: str):
-    pass
+    for image in tqdm(os.listdir( os.path.join(path, "3band"))):
+        shutil.copy(os.path.join(path, "3band", f'{image}'),
+                    os.path.join(DEST_PATH, "train", 'images', f'{image[:-3]}jpg'))
+        shutil.copy(os.path.join(path, "labels", f'{image[:-3]}png'),
+                    os.path.join(DEST_PATH, "train", 'labels', f'{image[:-3]}png'))
 
 def my_func(path: str):
     #shutil.copytree(path, DEST_PATH, dirs_exist_ok=True)
     for file in tqdm(os.listdir( f'{path}/images')):
-        shutil.copy(f'{path}/images/{file}', f'{DEST_PATH}/train//images/{file}')
+        shutil.copy(f'{path}/images/{file}', f'{DEST_PATH}/train/images/{file}')
         shutil.copy(f'{path}/labels/{file[:-3] + "png"}', f'{DEST_PATH}/train/labels/{file[:-3] + "png"}')
 
 def test_function(dataset_path:str, dest_path:str, proportion:float = 0.02):
@@ -52,16 +56,14 @@ def test_function(dataset_path:str, dest_path:str, proportion:float = 0.02):
 
 # CUIDAO - - Pon bien el separador. En windows es \, en los que no son especialitos es /
 FOLDER_FUNCTIONS = {
-    "personal\\nueva_zelanda": zelanda_la_nueva,
-    "personal\\SN1_buildings\\train": sn1_func,
-    "personal\\train": my_func
+    "personal/nueva_zelanda": zelanda_la_nueva,
+    "personal/SN1_buildings/train": sn1_func,
+    "personal/train": my_func
 }
 
 if __name__ == "__main__":
     os.makedirs(DEST_PATH + "/train/images", exist_ok=True)
     os.makedirs(DEST_PATH + "/train/labels", exist_ok=True)
-    os.makedirs(DEST_PATH + "/test/images", exist_ok=True)
-    os.makedirs(DEST_PATH + "/test/labels", exist_ok=True)
 
     fucntions2use = FOLDER_FUNCTIONS.copy()
     start = False
@@ -90,16 +92,25 @@ if __name__ == "__main__":
             except Exception as e:
                 return None
         
-        
         seleccion = [ i for i in map(lambda item: parseInt(item), seleccion) if i is not None]
 
         start = True
 
-    for i in seleccion:
-        key = list(fucntions2use.keys())[i]
-        #print(key)
-        fucntions2use[key](key)
+    if seleccion != "-1":
+        for i in seleccion:
+            key = list(fucntions2use.keys())[i]
+            #print(key)
+            fucntions2use[key](key)
 
-    #test_function(DEST_PATH + "/train", DEST_PATH + "/test")
+    if input("¿Quieres separar en un conjunto de test? s/n\n>>>").lower() == "s":
+        if os.path.isdir(DEST_PATH + "/test"):
+            for folder in os.listdir(DEST_PATH + "/test"):
+                shutil.rmtree(DEST_PATH + "/test/" + folder)
+        os.makedirs(DEST_PATH + "/test/images", exist_ok=True)
+        os.makedirs(DEST_PATH + "/test/labels", exist_ok=True)
+
+        test_function(DEST_PATH + "/train", DEST_PATH + "/test")
+    
+    print("Fin del programa")
 
 
