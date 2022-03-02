@@ -4,6 +4,8 @@ from tqdm import tqdm
 import os
 import cv2
 
+from erase_censored_images import erase_censored_images
+
 DEST_PATH = "personal/final_dataset"
 
 def _zelanda_la_oculta(path: str):
@@ -102,7 +104,10 @@ if __name__ == "__main__":
             #print(key)
             fucntions2use[key](key)
 
-    if input("¿Quieres separar en un conjunto de test? s/n\n>>>").lower() == "s":
+    if input("¿Quieres limpiar el dataset de imágenes malas? s/n\n>>> ").lower() == "s":
+        erase_censored_images(DEST_PATH + "/train/images", DEST_PATH + "/train/labels")
+        
+    if input("¿Quieres separar en un conjunto de test? s/n\n>>> ").lower() == "s":
         if os.path.isdir(DEST_PATH + "/test"):
             for folder in os.listdir(DEST_PATH + "/test"):
                 shutil.rmtree(DEST_PATH + "/test/" + folder)
