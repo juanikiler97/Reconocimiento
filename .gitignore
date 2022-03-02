@@ -1,11 +1,1 @@
-test_madrid.mp4
-test_warcelona.mp4
-test_nzelanda2.mp4
-test_nzelanda.mp4
-test/*
-train/*
-val/*
-checkpoint/*
-modelo_tfg.h5
-modelo_tfg_2.h5
-test_final.png
+personal/*
