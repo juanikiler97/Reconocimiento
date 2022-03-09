@@ -105,7 +105,7 @@ if __name__ == "__main__":
             fucntions2use[key](key)
 
     if input("¿Quieres limpiar el dataset de imágenes malas? s/n\n>>> ").lower() == "s":
-        erase_censored_images(DEST_PATH + "/train/images", DEST_PATH + "/train/labels")
+        erase_censored_images(img_folder_path= DEST_PATH + "/train/images", label_folder_path= DEST_PATH + "/train/labels")
         
     if input("¿Quieres separar en un conjunto de test? s/n\n>>> ").lower() == "s":
         if os.path.isdir(DEST_PATH + "/test"):
