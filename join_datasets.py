@@ -26,13 +26,13 @@ def zelanda_la_nueva(path: str = "nueva_zelanda"):
 
 def sn1_func(path: str):
     for image in tqdm(os.listdir( os.path.join(path, "3band"))):
-        shutil.copy(os.path.join(path, "3band", f'{image}'),
-                    os.path.join(DEST_PATH, "train", 'images', f'{image[:-3]}jpg'))
-        shutil.copy(os.path.join(path, "labels", f'{image[:-3]}png'),
-                    os.path.join(DEST_PATH, "train", 'labels', f'{image[:-3]}png'))
+        im = cv2.imread(os.path.join(path, "3band", f'{image}'))
+        cv2.imwrite(os.path.join(DEST_PATH, "train", 'images', 'images', f'{image[:-3]}jpg'), im)
+        
+        label = cv2.imread(os.path.join(path, "labels", f'{image[:-3]}png'))
+        cv2.imwrite(os.path.join(DEST_PATH, "train", 'labels', 'labels', f'{image[:-3]}png'), label)
 
 def my_func(path: str):
-    #shutil.copytree(path, DEST_PATH, dirs_exist_ok=True)
     for file in tqdm(os.listdir( f'{path}/images')):
         shutil.copy(f'{path}/images/{file}', f'{DEST_PATH}/train/images/{file}')
         shutil.copy(f'{path}/labels/{file[:-3] + "png"}', f'{DEST_PATH}/train/labels/{file[:-3] + "png"}')
@@ -45,7 +45,7 @@ def test_function(dataset_path:str, dest_path:str, proportion:float = 0.02):
         dataset_path: string con el path al dataset del que quitar imágenes
         dest_path: string que marca donde poner las imágenes
     """    
-    images = os.listdir(dataset_path + "/images")
+    images = os.listdir(dataset_path + "/images/images")
     n_images = len(images)
 
     random.seed(1234)
@@ -53,8 +53,8 @@ def test_function(dataset_path:str, dest_path:str, proportion:float = 0.02):
 
     print("Creando partición de Test...")
     for image in tqdm(selected):
-        shutil.move(f'{dataset_path}/images/{image}', f'{dest_path}/images/{image}')
-        shutil.move(f'{dataset_path}/labels/{image[:-3] + "png"}', f'{dest_path}/labels/{image[:-3] + "png"}')
+        shutil.move(f'{dataset_path}/images/images/{image}', f'{dest_path}/images/images/{image}')
+        shutil.move(f'{dataset_path}/labels/labels/{image[:-3] + "png"}', f'{dest_path}/labels/labels/{image[:-3] + "png"}')
 
 # CUIDAO - - Pon bien el separador. En windows es \, en los que no son especialitos es /
 FOLDER_FUNCTIONS = {
@@ -64,10 +64,10 @@ FOLDER_FUNCTIONS = {
 }
 
 if __name__ == "__main__":
-    os.makedirs(DEST_PATH + "/train/images", exist_ok=True)
-    os.makedirs(DEST_PATH + "/train/labels", exist_ok=True)
+    os.makedirs(DEST_PATH + "/train/images/images", exist_ok=True)
+    os.makedirs(DEST_PATH + "/train/labels/labels", exist_ok=True)
 
-    fucntions2use = FOLDER_FUNCTIONS.copy()
+    functions2use = FOLDER_FUNCTIONS.copy()
     start = False
     seleccion = []
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
             "Si quieres usar todas las carpetas, presiona enter\n"
             "Si quieres utilizar algunas en concreto, pon sus números separados por espacios\n"
             "Si no quieres usar ninguna, pon -1")
-        for i, func in enumerate(fucntions2use):
+        for i, func in enumerate(functions2use):
             print(f'\t{i} - {func}')
 
         seleccion = input(">>> ")
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         seleccion = seleccion.split(" ")
 
         if seleccion == ['']:
-            seleccion = list(range(len(fucntions2use)))  
+            seleccion = list(range(len(functions2use)))  
 
         def parseInt(string:str):
             try:
@@ -100,19 +100,19 @@ if __name__ == "__main__":
 
     if seleccion != "-1":
         for i in seleccion:
-            key = list(fucntions2use.keys())[i]
+            key = list(functions2use.keys())[i]
             #print(key)
-            fucntions2use[key](key)
+            functions2use[key](key)
 
     if input("¿Quieres limpiar el dataset de imágenes malas? s/n\n>>> ").lower() == "s":
-        erase_censored_images(img_folder_path= DEST_PATH + "/train/images", label_folder_path= DEST_PATH + "/train/labels")
+        erase_censored_images(img_folder_path= DEST_PATH + "/train/images/images", label_folder_path= DEST_PATH + "/train/labels/labels")
         
     if input("¿Quieres separar en un conjunto de test? s/n\n>>> ").lower() == "s":
         if os.path.isdir(DEST_PATH + "/test"):
             for folder in os.listdir(DEST_PATH + "/test"):
                 shutil.rmtree(DEST_PATH + "/test/" + folder)
-        os.makedirs(DEST_PATH + "/test/images", exist_ok=True)
-        os.makedirs(DEST_PATH + "/test/labels", exist_ok=True)
+        os.makedirs(DEST_PATH + "/test/images/images", exist_ok=True)
+        os.makedirs(DEST_PATH + "/test/labels/labels", exist_ok=True)
 
         test_function(DEST_PATH + "/train", DEST_PATH + "/test")
     
