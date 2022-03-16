@@ -6,6 +6,7 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 
 def erase_censored_images(img_folder_path:str, label_folder_path:str):
+    print(img_folder_path)
     NEGRO = [0,0,0]
     raras = []
     if os.path.isfile("raras.pkl"):
