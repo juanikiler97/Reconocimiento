@@ -17,7 +17,7 @@ def _zelanda_la_oculta(path: str):
         print( f"\t{subdir} - {len(files)}" )
         for i in tqdm(files):
             image = cv2.imread( os.path.join(path, subdir, i))
-            cv2.imwrite(os.path.join(DEST_PATH, "train" , subdir + "s", i[:-3] + ext), image)
+            cv2.imwrite(os.path.join(DEST_PATH, "train" , subdir + "s", subdir + "s", i[:-3] + ext), image)
 
 def zelanda_la_nueva(path: str = "nueva_zelanda"):
     for i in next(os.walk(path))[1]:
@@ -34,8 +34,8 @@ def sn1_func(path: str):
 
 def my_func(path: str):
     for file in tqdm(os.listdir( f'{path}/images')):
-        shutil.copy(f'{path}/images/{file}', f'{DEST_PATH}/train/images/{file}')
-        shutil.copy(f'{path}/labels/{file[:-3] + "png"}', f'{DEST_PATH}/train/labels/{file[:-3] + "png"}')
+        shutil.copy(f'{path}/images/{file}', f'{DEST_PATH}/train/images/images/{file}')
+        shutil.copy(f'{path}/labels/{file[:-3] + "png"}', f'{DEST_PATH}/train/labels/labels/{file[:-3] + "png"}')
 
 def test_function(dataset_path:str, dest_path:str, proportion:float = 0.02):
     """
